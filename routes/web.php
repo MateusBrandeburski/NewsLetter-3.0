@@ -8,6 +8,7 @@ use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\Web\Teste\TesteController;
+use App\Http\Controllers\Web\CorridasDFController;
 
 // Main Page Route
 // Route::get('/', [HomePage::class, 'index'])->name('pages-home');
@@ -23,3 +24,4 @@ Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-
 
 // Vue.js com Inertia.js
 Route::get('/', [TesteController::class, 'index'])->name('teste');
+Route::get('/corridasDF', [CorridasDFController::class, 'index'])->name('corridas-df');
