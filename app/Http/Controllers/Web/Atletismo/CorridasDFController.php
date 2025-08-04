@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Web\Atletismo;
 
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,13 +17,15 @@ class CorridasDFController extends Controller
 
         $query = DB::table('news_letter.corridas_df')->orderBy('data_evento', 'asc');
 
-        // Se existir um termo de busca, aplica um WHERE com LIKE em todas as colunas relevantes
+        // Se existir um termo de busca
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('nome', 'LIKE', "%{$search}%")
-                  ->orWhere('local', 'LIKE', "%{$search}%")
+                  ->orWhere('distancia', 'LIKE', "%{$search}%")
                   ->orWhere('data_evento', 'LIKE', "%{$search}%")
-                  ->orWhere('descricao', 'LIKE', "%{$search}%");
+                  ->orWhere('local', 'LIKE', "%{$search}%")
+                  ->orWhere('horario', 'LIKE', "%{$search}%")
+                  ->orWhere('valor', 'LIKE', "%{$search}%");
             });
         }
 
@@ -32,14 +35,13 @@ class CorridasDFController extends Controller
         $offset = ($page - 1) * $perPage;
         $corridas = $query->offset($offset)->limit($perPage)->get();
 
-        // Tratar encoding e limpar dados para evitar problemas de caracteres especiais
+        // Limpar dados
         $corridasLimpas = $corridas->map(function ($corrida) {
             $corridaArray = (array) $corrida;
             $corridaLimpa = [];
             
             foreach ($corridaArray as $key => $value) {
                 if (is_string($value)) {
-                    // Limpar caracteres não imprimíveis e converter encoding
                     $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
                     $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
                 }
@@ -49,14 +51,20 @@ class CorridasDFController extends Controller
             return (object) $corridaLimpa;
         });
 
-        return response()->json([
-            'data' => $corridasLimpas,
-            'current_page' => (int) $page,
-            'per_page' => (int) $perPage,
-            'total' => $total,
-            'last_page' => ceil($total / $perPage),
-            'from' => $offset + 1,
-            'to' => min($offset + $perPage, $total)
-        ], 200, [], JSON_UNESCAPED_UNICODE);
+        return Inertia::render('atletismo/CorridasDF', [
+            'corridas' => $corridasLimpas,
+            'pagination' => [
+                'current_page' => (int) $page,
+                'per_page' => (int) $perPage,
+                'total' => $total,
+                'last_page' => ceil($total / $perPage),
+                'from' => $offset + 1,
+                'to' => min($offset + $perPage, $total)
+            ],
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage
+            ]
+        ]);
     }
 } 

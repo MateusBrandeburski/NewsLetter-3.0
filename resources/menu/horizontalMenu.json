@@ -6,7 +6,7 @@
       "slug": "layouts",
       "submenu": [
         {
-          "url": "layouts/without-menu",
+          "url": "/corridasDF",
           "name": "Corridas DF",
           "icon": "menu-icon tf-icons ti ti-run",
           "slug": "layouts-without-menu"
