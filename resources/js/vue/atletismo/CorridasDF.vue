@@ -3,34 +3,26 @@
     <div class="col-12">
       <!-- Header com controles -->
       <div class="card mx-4">
-        <div class="card-body p-1">
-          <div class="row">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-center flex-wrap">
             <!-- Título -->
-            <div class="col-md-4 ms-3">
-              <div class="d-flex align-items-center mt-2">
-                <h4 class="d-flex align-items-center">
-                  <i class="ti ti-run me-2 text-primary"></i>
-                  Corridas DF e entorno
-                </h4>
-
-              </div>
+            <div>
+              <h4 class="d-flex align-items-center mb-0 ms-3">
+                <!-- <i class="ti ti-run me-2 text-primary"></i> -->
+                Corridas DF e Entorno
+              </h4>
+              <small class="text-muted ms-4">{{ pagination.total }} corridas ainda para acontecer</small>
             </div>
-            <!-- Total -->
-            <!-- <div class="col-md-2 d-flex align-items-center">
-              <div class="badge bg-primary text-white fs-6 px-3 py-2">
-                <i class="ti ti-trophy me-1"></i>
-                {{ pagination.total }} corridas
-              </div>
-            </div> -->
+
             <!-- Controles -->
-            <div class="col-md-6 d-flex justify-content-end align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
               <!-- Busca -->
-              <div class="input-group" style="max-width: 250px;">
+              <div class="input-group" style="max-width: 300px;">
                 <span class="input-group-text"><i class="ti ti-search"></i></span>
                 <input 
                   type="text" 
                   class="form-control" 
-                  placeholder="Busca Livre"
+                  placeholder="Buscar..."
                   v-model="form.search"
                   @input="debounceSearch"
                 >
@@ -42,8 +34,7 @@
                   class="btn btn-outline-secondary dropdown-toggle" 
                   type="button" 
                   data-bs-toggle="dropdown" 
-                  aria-expanded="false"
-                >
+                  aria-expanded="false">
                   <i class="ti ti-list me-1"></i>
                   {{ form.per_page }} itens
                 </button>
@@ -53,8 +44,7 @@
                       class="dropdown-item" 
                       href="#" 
                       @click.prevent="changePerPage(10)"
-                      :class="{ active: form.per_page == 10 }"
-                    >
+                      :class="{ active: form.per_page == 10 }">
                       <i class="ti ti-circle-filled me-2" style="font-size: 6px;"></i>
                       10 itens
                     </a>
@@ -95,6 +85,17 @@
                 </ul>
               </div>
 
+              <!-- Ordenação -->
+              <button 
+                class="btn btn-outline-secondary d-flex align-items-center" 
+                @click="toggleSort"
+                :title="'Ordenar por data do evento: ' + (form.sort_order === 'asc' ? 'Mais antigas primeiro' : 'Mais recentes primeiro')"
+                style="min-width: 120px; height: 38px;"
+              >
+                <i class="ti ti-calendar me-1"></i>
+                <i :class="form.sort_order === 'asc' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+              </button>
+
               <!-- Toggle View -->
               <div class="btn-group view-toggle" role="group">
                 <input 
@@ -104,7 +105,7 @@
                   :checked="viewMode === 'table'"
                   @change="viewMode = 'table'"
                 >
-                <label class="btn btn-outline-primary" for="tableView">
+                <label class="btn btn-outline-secondary" for="tableView">
                   <i class="ti ti-table me-1"></i>
                   Tabela
                 </label>
@@ -116,7 +117,7 @@
                   :checked="viewMode === 'card'"
                   @change="viewMode = 'card'"
                 >
-                <label class="btn btn-outline-primary" for="cardView">
+                <label class="btn btn-outline-secondary" for="cardView">
                   <i class="ti ti-layout-grid me-1"></i>
                   Card
                 </label>
@@ -125,14 +126,7 @@
           </div>
         </div>
       </div>
-
-      <!-- Badge de total de resultados -->
-      <div v-if="corridas.length > 0" class="mx-4 mb-2">
-        <div class="d-flex justify-content-end">
-          <small class="text-muted">{{ pagination.total }} corridas encontradas</small>
-        </div>
-      </div>
-
+      
       <!-- Tela de Nenhum Resultado -->
       <div v-if="corridas.length === 0" class="card mx-4 mt-4 mb-5">
         <div class="card-body p-5">
@@ -148,8 +142,7 @@
             <button 
               v-if="form.search" 
               @click="clearSearch" 
-              class="btn btn-outline-primary"
-            >
+              class="btn btn-outline-primary">
               <i class="ti ti-x me-1"></i>
               Limpar pesquisa
             </button>
@@ -190,15 +183,15 @@
       </div>
 
       <!-- Visualização em Cards -->
-      <div v-else class="container-fluid mt-4">
+      <div v-else class="container-fluid mt-4" style="padding-left: 1rem; padding-right: 1rem;">
         <div class="row">
           <div 
             v-for="corrida in corridas" 
             :key="corrida.id"
             class="col-md-6 col-lg-4 col-xl-3 mb-4"
           >
-            <div class="card h-100 border-0">
-              <div class="card-body p-3">
+            <div class="card border-0" style="height: 500px;">
+              <div class="card-body p-3 d-flex flex-column">
                 <img 
                   class="img-fluid rounded-3 mb-3"
                   :src="`/corrida/imagem?codigo=corridas_df&id=${corrida.id}`"
@@ -215,12 +208,12 @@
 
                 <!-- Localização -->
                 <div v-if="corrida.local" class="mb-3">
-                  <span class="timeline-indicator-advanced timeline-indicator-primary">
-                    <i class="ti ti-map-pin"></i>
-                  </span>
-                  <div class="timeline-event ps-0 pb-0">
+                  <div class="timeline-event">
                     <div class="timeline-header">
-                      <small class="text-primary text-uppercase fw-medium">Localização</small>
+                      <small class="text-primary text-uppercase fw-medium">
+                        <i class="ti ti-map-pin mb-1"></i>
+                        Localização
+                      </small>
                     </div>
                     <h6 class="mb-0">{{ corrida.local }}</h6>
                     <p class="text-muted mb-0">{{ corrida.distancia }}</p>
@@ -228,22 +221,28 @@
                 </div>
 
                 <!-- Valor -->
-                <div class="row mb-3 g-3">
-                  <div class="d-flex">
+                 <div class="d-flex align-items-center">
                     <div class="badge bg-label-info me-3 rounded p-2">
-                      <i class="ti ti-currency-dollar ti-sm"></i>
+                          <i class="ti ti-currency-dollar ti-sm"></i>
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0 text-success">{{ corrida.valor || 'Não informado' }}</h6>
-                        <small class="text-muted d-block mb-1">Valor</small>
+                    <div class="row mb-3 g-3">
+                      <div class="d-flex">
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                          <div class="me-2">
+                            <h6 
+                              class="mb-0 text-success text-truncate-custom" 
+                              :title="(corrida.valor || 'Não informado').length > 60 ? (corrida.valor || 'Não informado') : null"
+                            >
+                              {{ truncateValue(corrida.valor || 'Não informado') }}
+                            </h6>
+                          </div>
+                        </div>
                       </div>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Data e Horário -->
-                <div class="row mb-3 g-3">
+                <div class="row mb-3 g-3 mt-1">
                   <div class="col-6">
                     <div class="d-flex">
                       <div class="avatar flex-shrink-0 me-2">
@@ -252,8 +251,7 @@
                         </span>
                       </div>
                       <div>
-                        <h6 class="mb-0 text-nowrap">{{ formatDateShort(corrida.data_evento) }}</h6>
-                        <small>Date</small>
+                        <h6 class="mb-0">{{ formatDateShort(corrida.data_evento) }}</h6>
                       </div>
                     </div>
                   </div>
@@ -273,7 +271,10 @@
                   </div>
                 </div>
 
-                <a :href="corrida.inscricao" target="_blank" class="btn btn-primary w-100">
+                <!-- Espaçador para empurrar o botão para o final -->
+                <div class="flex-grow-1"></div>
+
+                <a :href="corrida.inscricao" target="_blank" class="btn btn-primary w-100 mt-auto">
                   Inscrição
                 </a>
               </div>
@@ -283,35 +284,34 @@
       </div>
 
       <!-- Paginação -->
-      <div v-if="pagination.last_page > 1" class="card mx-4 mb-5">
-        <div class="card-body p-2">
-          <nav aria-label="Navegação da página">
-            <ul class="pagination justify-content-center">
-              <li class="page-item" :class="{ disabled: pagination.current_page === 1 }">
-                <button class="page-link" @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page === 1">
-                  Anterior
-                </button>
-              </li>
-              
-              <li 
-                v-for="page in visiblePages" 
-                :key="page"
-                class="page-item" 
-                :class="{ active: page === pagination.current_page }"
-              >
-                <button class="page-link" @click="goToPage(page)">
-                  {{ page }}
-                </button>
-              </li>
-              
-              <li class="page-item" :class="{ disabled: pagination.current_page === pagination.last_page }">
-                <button class="page-link" @click="goToPage(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page">
-                  Próxima
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
+      <div v-if="pagination.last_page > 1" class="d-flex align-items-center justify-content-center mt-4 mb-5 mx-4">
+        <button 
+          class="btn btn-sm btn-outline-secondary me-2" 
+          @click="goToPage(pagination.current_page - 1)" 
+          :disabled="pagination.current_page === 1"
+        >
+          <i class="ti ti-chevron-left"></i>
+        </button>
+        
+        <template v-for="page in visiblePages" :key="page">
+          <button
+            v-if="page !== '...'"
+            class="btn btn-sm me-1"
+            :class="page === pagination.current_page ? 'btn-primary' : 'btn-outline-secondary'"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+          <span v-else class="px-2 text-muted">...</span>
+        </template>
+        
+        <button 
+          class="btn btn-sm btn-outline-secondary ms-2" 
+          @click="goToPage(pagination.current_page + 1)" 
+          :disabled="pagination.current_page === pagination.last_page"
+        >
+          <i class="ti ti-chevron-right"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -338,44 +338,38 @@ export default {
   },
   data() {
     return {
-      viewMode: 'table',
+      viewMode: 'card',
       searchTimeout: null,
       form: {
         search: this.filters.search || '',
         per_page: this.filters.per_page || 10,
-        page: this.pagination.current_page || 1
+        page: this.pagination.current_page || 1,
+        sort_order: this.filters.sort_order || 'desc'
       }
     }
   },
   computed: {
     visiblePages() {
-      const delta = 2
-      const range = []
-      const rangeWithDots = []
-
-      for (let i = Math.max(2, this.pagination.current_page - delta);
-           i <= Math.min(this.pagination.last_page - 1, this.pagination.current_page + delta);
-           i++) {
-        range.push(i)
+      const current = this.pagination.current_page
+      const total = this.pagination.last_page
+      const pages = []
+      
+      // Sempre mostrar página 1
+      if (total > 0) pages.push(1)
+      
+      // Se tem muitas páginas, mostrar ... e páginas próximas
+      if (current > 3) pages.push('...')
+      
+      // Mostrar páginas ao redor da atual
+      for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+        if (!pages.includes(i)) pages.push(i)
       }
-
-      if (this.pagination.current_page - delta > 2) {
-        rangeWithDots.push(1, '...')
-      } else {
-        rangeWithDots.push(1)
-      }
-
-      rangeWithDots.push(...range)
-
-      if (this.pagination.current_page + delta < this.pagination.last_page - 1) {
-        rangeWithDots.push('...', this.pagination.last_page)
-      } else {
-        if (this.pagination.last_page > 1) {
-          rangeWithDots.push(this.pagination.last_page)
-        }
-      }
-
-      return rangeWithDots.filter(page => page !== '...' || rangeWithDots.length > 1)
+      
+      // Se não é a última página e tem espaço, mostrar ... e última
+      if (current < total - 2) pages.push('...')
+      if (total > 1 && !pages.includes(total)) pages.push(total)
+      
+      return pages
     }
   },
   methods: {
@@ -453,6 +447,14 @@ export default {
     clearSearch() {
       this.form.search = ''
       this.updateFilters()
+    },
+    toggleSort() {
+      this.form.sort_order = this.form.sort_order === 'asc' ? 'desc' : 'asc'
+      this.updateFilters()
+    },
+    truncateValue(value) {
+      if (value.length <= 60) return value
+      return value.substring(0, 60) + '...'
     }
   },
   mounted() {
@@ -517,21 +519,15 @@ export default {
   color: #03c3ec !important;
 }
 
-.pagination .page-link {
-  color: #696cff;
-  border-color: #d9dee3;
+.text-truncate-custom {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pagination .page-item.active .page-link {
-  background-color: #696cff;
-  border-color: #696cff;
-}
 
-.pagination .page-link:hover {
-  color: #5f63f2;
-  background-color: #f8f9fa;
-  border-color: #d9dee3;
-}
 
 /* Toggle View Switch */
 .view-toggle .btn {

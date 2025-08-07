@@ -14,8 +14,9 @@ class CorridasDFController extends Controller
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search', '');
         $page = $request->input('page', 1);
+        $sortOrder = $request->input('sort_order', 'desc');
 
-        $query = DB::table('news_letter.corridas_df')->orderBy('data_evento', 'asc');
+        $query = DB::table('news_letter.corridas_df')->orderBy('data_evento', $sortOrder);
 
         // Se existir um termo de busca
         if (!empty($search)) {
@@ -63,7 +64,8 @@ class CorridasDFController extends Controller
             ],
             'filters' => [
                 'search' => $search,
-                'per_page' => $perPage
+                'per_page' => $perPage,
+                'sort_order' => $sortOrder
             ]
         ]);
     }

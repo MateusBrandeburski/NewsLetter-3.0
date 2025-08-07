@@ -15,7 +15,7 @@ $navbarFull = true;
 $isNavbar = ($isNavbar ?? true);
 $isMenu = ($isMenu ?? true);
 $isFlex = ($isFlex ?? false);
-$isFooter = ($isFooter ?? true);
+$isFooter = ($configData['footerFixed'] ?? false);
 $customizerHidden = ($customizerHidden ?? '');
 
 /* HTML Classes */
@@ -58,7 +58,7 @@ $containerNav = ($configData['contentLayout'] === 'compact') ? 'container-xxl' :
         @if ($isFlex)
         <div class="{{$container}} d-flex align-items-stretch flex-grow-1 p-0">
           @else
-          <div class="{{$container}} flex-grow-1 container-p-y">
+          <div class="{{$container}} flex-grow-1 container-p-y" style="padding-top: 40px !important">
             @endif
 
             @yield('content')
@@ -67,9 +67,9 @@ $containerNav = ($configData['contentLayout'] === 'compact') ? 'container-xxl' :
           <!-- / Content -->
 
           <!-- Footer -->
-          {{-- @if ($isFooter)
+          @if ($isFooter)
           @include('layouts/sections/footer/footer')
-          @endif --}}
+          @endif
           <!-- / Footer -->
           <div class="content-backdrop fade"></div>
         </div>
